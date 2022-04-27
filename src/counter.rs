@@ -90,9 +90,16 @@ impl Counter {
     }
 
     fn start_read(&self) {
-        self.reading.fetch_add(1, Ordering::Release);
-        while self.uncertain.load(Ordering::Acquire) {
-            hint::spin_loop();
+        loop {
+            while self.uncertain.load(Ordering::Relaxed) {
+                hint::spin_loop();
+            }
+            self.reading.fetch_add(1, Ordering::Release);
+            if self.uncertain.load(Ordering::Acquire) {
+                self.reading.fetch_sub(1, Ordering::Relaxed);
+                continue;
+            }
+            break;
         }
     }
 

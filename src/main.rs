@@ -22,7 +22,7 @@ async fn main() -> anyhow::Result<()> {
         .into_make_service();
 
     let server =
-        axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+        axum::Server::bind(&"0.0.0.0:1337".parse().unwrap())
             .serve(service);
 
     tokio::select! {
